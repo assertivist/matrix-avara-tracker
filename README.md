@@ -1,14 +1,14 @@
-# matrix-sticker-bot
+# matrix-smile-bot
 
-[![#stickerbot:t2bot.io](https://img.shields.io/badge/matrix-%23stickerbot:t2bot.io-brightgreen.svg)](https://matrix.to/#/#stickerbot:t2bot.io)
-[![TravisCI badge](https://travis-ci.org/turt2live/matrix-sticker-bot.svg?branch=master)](https://travis-ci.org/turt2live/matrix-sticker-bot)
+[![#smilebot:t2bot.io](https://img.shields.io/badge/matrix-%23smilebot:t2bot.io-brightgreen.svg)](https://matrix.to/#/#smilebot:t2bot.io)
+[![TravisCI badge](https://travis-ci.org/turt2live/matrix-smile-bot.svg?branch=master)](https://travis-ci.org/turt2live/matrix-smile-bot)
 
-A matrix bot to allow users to make their own sticker packs.
+A matrix bot that says ":)" when someone says ":("
 
 # Usage
 
-1. Invite `@stickers:t2bot.io` to a private chat
-2. Send the message `!stickers help` to get information about how to use the bot
+1. Invite `@smile:t2bot.io` to your room
+2. Send the message `:(`
 
 # Building your own
 
