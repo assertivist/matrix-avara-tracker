@@ -15,9 +15,12 @@ async function run() {
         if (!event['content']) return;
         if (event['type'] !== "m.room.message") return;
         if (event['content']['msgtype'] !== "m.text") return;
-        if (event['content']['body'] !== ":(") return;
 
-        client.sendNotice(roomId, ":)");
+        if (event['content']['body'].endsWith(":(")) {
+            client.sendNotice(roomId, ":)");
+        } else if (event['content']['body'].endsWith("🙁")) {
+            client.sendNotice(roomId, "🙂");
+        }
     });
 
     AutojoinRoomsMixin.setupOnClient(client);

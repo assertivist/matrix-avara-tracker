@@ -3,7 +3,7 @@ accessToken: "YOUR_TOKEN_HERE"
 
 # Settings for controlling how logging works
 logging:
-  file: logs/stickerbot.log
+  file: logs/smilebot.log
   console: true
   consoleLevel: info
   fileLevel: verbose
