@@ -8,11 +8,12 @@ import {
 import config from "./config";
 import * as mkdirp from "mkdirp";
 import { LogService } from "matrix-js-snippets";
+import * as path from "path";
 
 mkdirp.sync(config.dataPath);
 
 LogService.configure(config.logging);
-const storageProvider = new SimpleFsStorageProvider(config.dataPath);
+const storageProvider = new SimpleFsStorageProvider(path.join(config.dataPath, "__matrix.db"));
 const client = new MatrixClient(config.homeserverUrl, config.accessToken, storageProvider);
 
 async function run() {
