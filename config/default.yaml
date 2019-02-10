@@ -1,5 +1,6 @@
 homeserverUrl: "https://t2bot.io"
 accessToken: "YOUR_TOKEN_HERE"
+dataPath: "./storage"
 
 # Settings for controlling how logging works
 logging:

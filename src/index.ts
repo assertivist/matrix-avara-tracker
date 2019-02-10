@@ -1,10 +1,18 @@
-import { AutojoinRoomsMixin, MatrixClient, SimpleRetryJoinStrategy } from "matrix-bot-sdk";
+import {
+    AutojoinRoomsMixin,
+    AutojoinUpgradedRoomsMixin,
+    MatrixClient,
+    SimpleFsStorageProvider,
+    SimpleRetryJoinStrategy
+} from "matrix-bot-sdk";
 import config from "./config";
+import * as mkdirp from "mkdirp";
 import { LogService } from "matrix-js-snippets";
-import { LocalstorageStorageProvider } from "./LocalstorageStorageProvider";
+
+mkdirp.sync(config.dataPath);
 
 LogService.configure(config.logging);
-const storageProvider = new LocalstorageStorageProvider("./storage");
+const storageProvider = new SimpleFsStorageProvider(config.dataPath);
 const client = new MatrixClient(config.homeserverUrl, config.accessToken, storageProvider);
 
 async function run() {
@@ -17,13 +25,14 @@ async function run() {
         if (event['content']['msgtype'] !== "m.text") return;
 
         if (event['content']['body'].endsWith(":(")) {
-            client.sendNotice(roomId, ":)");
+            return client.sendNotice(roomId, ":)");
         } else if (event['content']['body'].endsWith("🙁")) {
-            client.sendNotice(roomId, "🙂");
+            return client.sendNotice(roomId, "🙂");
         }
     });
 
     AutojoinRoomsMixin.setupOnClient(client);
+    AutojoinUpgradedRoomsMixin.setupOnClient(client);
     client.setJoinStrategy(new SimpleRetryJoinStrategy());
     return client.start();
 }
