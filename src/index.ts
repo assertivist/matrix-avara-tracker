@@ -41,7 +41,7 @@ async function run() {
             return client.sendNotice(roomId, "🙂");
         } else if (event['content']['body'].endsWith("😠")) {
             return client.sendNotice(roomId, "🙂");
-        } 
+        }
     });
 
     AutojoinRoomsMixin.setupOnClient(client);
