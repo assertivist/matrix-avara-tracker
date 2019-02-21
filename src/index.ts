@@ -29,8 +29,8 @@ async function run() {
             return client.sendNotice(roomId, ":)");
         } else if (event['content']['body'].endsWith("🙁")) {
             return client.sendNotice(roomId, "🙂");
-        } else if (event['content']['body'].endsWith("D:")) {
-            return client.sendNotice(roomId, ":D");
+        } else if (event['content']['body'].endsWith(":-(")) {
+            return client.sendNotice(roomId, ":-)");
         } else if (event['content']['body'].endsWith("D:")) {
             return client.sendNotice(roomId, ":D");
         } else if (event['content']['body'].endsWith("😿")) {
