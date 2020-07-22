@@ -12,6 +12,7 @@
   "dependencies": {
     "@types/node": "^9.4.6",
     "config": "^3.0.1",
+    "got": "^11.5.1",
     "js-yaml": "^3.12.1",
     "matrix-bot-sdk": "^0.3.2",
     "matrix-js-snippets": "^0.2.8",
