@@ -19,38 +19,111 @@ const client = new MatrixClient(config.homeserverUrl, config.accessToken, storag
 
 const trackerurl = "http://avara.io/";
 
-var last_checked = Date.now();
-var checking = false;
+/*
+{
+  "games": [
+    {
+      "address": "73.83.90.254",
+      "port": 19567,
+      "first_seen": "2020-07-25T07:28:23.527359+00:00",
+      "last_seen": "2020-07-25T07:43:23.394011+00:00",
+      "players": [
+        "croc"
+      ],
+      "description": "esports aaaa",
+      "password": false
+    }
+  ]
+}
+*/
 
-var games = [];
+function game_to_message(game) {
+    var host = game["players"][0];
+    var addr = game["address"];
+    var desc = game["description"];
+    var mins = ((Date.now() - Date.parse(game["first_seen"])) / (1000 * 60)).toFixed(1);
+    var players = "";
+    if (game["players"].length > 1) {
+        players = " " + game["players"].join(", ") + " are playing";
+    }
+    return host + " is hosting '" + desc + "' at " + addr + " (up for " + mins + " mins)" + players;
+}
+
+var last_checked = Date.now();
+
+var games = {};
 
 
 async function run() {
     const userId = await client.getUserId();
 
-    client.on("room.message", (roomId, event) => {
+    client.on("room.message", async (roomId, event) => {
         if (event['sender'] === userId) return;
         if (!event['content']) return;
         if (event['type'] !== "m.room.message") return;
         if (event['content']['msgtype'] !== "m.text") return;
 
-	LogService.info("index", "Hello");
-	LogService.info("index", Date.now());
-	LogService.info("index", last_checked);
-	LogService.info("index", checking);
-
-	if (!checking && Date.now() - last_checked > 10000) {
-	    LogService.info("index", "checking tracker");
-	    checking = true;
+        if (Date.now() - last_checked > 10000) {
+            LogService.info("index", "checking tracker");
             last_checked = Date.now();
-	    got(trackerurl + "api/v1/games/").then(response => {
-                games = JSON.parse(response.body)["games"];
-		LogService.info("index", JSON.stringify(games));
-		checking = false;
-	    }).catch(error => { LogService.info("index", error) });
-	}
+            await got(trackerurl + "api/v1/games/").then(response => {
+                var results = JSON.parse(response.body)["games"];
+                if (results.count < 1) {
+                    games = {}
+                }
+                for (let r of results) {
+                    if (r["players"].length < 1) continue;
+                    var game_hash = r["address"] + r["players"][0] + r["first_seen"];
+                    if (games.hasOwnProperty(game_hash)) {
+                        // we know about this game
+                        // check the users against what we have
+                        var known_users = games[game_hash]["players"];
+                        var result_users = r["players"];
+                        let left = known_users.filter(item => result_users.indexOf(item));
+                        let joined = result_users.filter(item => known_users.indexOf(item));
 
-	if (event['content']['body'].endsWith(":D")) {
+                        if (left.length > 0 || joined.length > 0) {
+                            games[game_hash]["update"] = known_users[0] + " is still hosting."
+                            if (left.length > 0) { games[game_hash]["update"] += left.join(", ") + " left. " }
+                            if (joined.length > 0) { games[game_hash]["update"] += joined.join(", ") + " joined. "}
+                            games[game_hash]["update"] += " - http://avara.io/"
+                        }
+                    }
+                    else {
+                        r["new"] = true;
+                        r["update"] = "";
+                        games[game_hash] = r;
+                    }
+                }
+            }).catch(error => { LogService.info("index", error) });
+        }
+        var msg = "";
+        for (var g in games) {
+            if (games[g]["new"] == true) {
+                games[g]["new"] = false;
+                msg += game_to_message(games[g]) + "\n";
+            }
+            if (games[g]["update"].length > 0) {
+                msg += games[g]["update"] + "\n";
+                games[g]["update"] = "";
+            }
+        }
+        if (msg.length > 0) {
+            return client.sendNotice(roomId, msg);
+        }
+
+    
+        if (event['content']['body'].startsWith("!tracker")) {
+            if (Object.keys(games).length < 1) return client.sendNotice(roomId, "No games");
+            msg = "";
+            for (g in games) {
+                msg += game_to_message(games[g]) + "\n";
+            }
+            msg += "http://avara.io/";
+            return client.sendNotice(roomId, msg);
+        }
+
+        if (event['content']['body'].endsWith(":D")) {
             return client.sendNotice(roomId, "D:");
         } else if (event['content']['body'].endsWith(">:€")) {
             return client.sendNotice(roomId, "€:<");
@@ -59,15 +132,6 @@ async function run() {
         } else if (event['content']['body'].endsWith("D:")) {
             return client.sendNotice(roomId, ":D");
         }
-
-	if (event['content']['body'].startsWith("!tracker")) {
-	    if (games.length < 1) return client.sendNotice(roomId, "No games");
-	    return client.sendNotice(roomId, JSON.stringify(games));
-	}
-    });
-
-    client.on("room.message", (e) => {
-	}
     });
 
     AutojoinRoomsMixin.setupOnClient(client);
