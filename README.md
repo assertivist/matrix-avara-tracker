@@ -1,14 +1,10 @@
-# matrix-smile-bot
+# matrix-avara-tracker
 
-[![#smilebot:t2bot.io](https://img.shields.io/badge/matrix-%23smilebot:t2bot.io-brightgreen.svg)](https://matrix.to/#/#smilebot:t2bot.io)
-[![TravisCI badge](https://travis-ci.org/turt2live/matrix-smile-bot.svg?branch=master)](https://travis-ci.org/turt2live/matrix-smile-bot)
+A matrix bot that checks the avara tracker and posts games when they are hosted
 
-A matrix bot that says ":)" when someone says ":("
+you can also do '!tracker' for a list
 
-# Usage
-
-1. Invite `@smile:t2bot.io` to your room
-2. Send the message `:(`
+This was shamelessly hacked out of "matrix-smile-bot" -- this repo should be a fork of that if you're interested -- absolutely do not use this as an example of how to do anything
 
 # Building your own
 

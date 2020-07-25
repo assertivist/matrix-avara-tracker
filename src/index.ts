@@ -18,6 +18,7 @@ const storageProvider = new SimpleFsStorageProvider(path.join(config.dataPath, "
 const client = new MatrixClient(config.homeserverUrl, config.accessToken, storageProvider);
 
 const trackerurl = "http://avara.io/";
+const endpoint = "api/v1/games/";
 
 /*
 {
@@ -66,7 +67,7 @@ async function run() {
         if (Date.now() - last_checked > 10000) {
             LogService.info("index", "checking tracker");
             last_checked = Date.now();
-            await got(trackerurl + "api/v1/games/").then(response => {
+            await got(trackerurl + endpoint).then(response => {
                 var results = JSON.parse(response.body)["games"];
                 if (results.count < 1) {
                     games = {}
@@ -88,7 +89,7 @@ async function run() {
                             games[game_hash]["update"] = known_users[0] + " is still hosting."
                             if (left.length > 0) { games[game_hash]["update"] += left.join(", ") + " left. " }
                             if (joined.length > 0) { games[game_hash]["update"] += joined.join(", ") + " joined. "}
-                            games[game_hash]["update"] += " - http://avara.io/"
+                            games[game_hash]["update"] += "\n" + trackerurl
                         }
                     }
                     else {
@@ -121,6 +122,7 @@ async function run() {
             }
         }
         if (msg.length > 0) {
+            msg += "\n" + trackerurl;
             return client.sendNotice(roomId, msg);
         }
 
@@ -131,7 +133,7 @@ async function run() {
             for (g in games) {
                 msg += game_to_message(games[g]) + "\n";
             }
-            msg += "http://avara.io/";
+            msg += trackerurl;
             return client.sendNotice(roomId, msg);
         }
 
@@ -152,4 +154,4 @@ async function run() {
     return client.start();
 }
 
-run().then(() => LogService.info("index", "Smile bot started!"));
+run().then(() => LogService.info("index", "Tracker bot started!"));
