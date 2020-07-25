@@ -71,9 +71,11 @@ async function run() {
                 if (results.count < 1) {
                     games = {}
                 }
+                var new_hashes = [];
                 for (let r of results) {
                     if (r["players"].length < 1) continue;
                     var game_hash = r["address"] + r["players"][0] + r["first_seen"];
+                    new_hashes.push(game_hash);
                     if (games.hasOwnProperty(game_hash)) {
                         // we know about this game
                         // check the users against what we have
@@ -95,6 +97,16 @@ async function run() {
                         games[game_hash] = r;
                     }
                 }
+                var remove = [];
+                for (var g in games) {
+                    if(new_hashes.indexOf(g) < 0) {
+                        remove.push(g);
+                    }
+                }
+                for (let rm of remove) {
+                    delete games[rm];
+                }
+
             }).catch(error => { LogService.info("index", error) });
         }
         var msg = "";
