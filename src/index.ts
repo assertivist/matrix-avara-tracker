@@ -10,6 +10,7 @@ import * as mkdirp from "mkdirp";
 import { LogService } from "matrix-js-snippets";
 import * as path from "path";
 const got = require('got');
+const noodlejs = require("noodle.js");
 
 mkdirp.sync(config.dataPath);
 
@@ -89,7 +90,7 @@ async function run() {
                             games[game_hash]["update"] = known_users[0] + " is still hosting."
                             if (left.length > 0) { games[game_hash]["update"] += left.join(", ") + " left. " }
                             if (joined.length > 0) { games[game_hash]["update"] += joined.join(", ") + " joined. "}
-                            games[game_hash]["update"] += "\n" + trackerurl
+                            games[game_hash]["players"] = r["players"];
                         }
                     }
                     else {
@@ -117,12 +118,12 @@ async function run() {
                 msg += game_to_message(games[g]) + "\n";
             }
             if (games[g]["update"].length > 0) {
-                msg += games[g]["update"] + "\n";
+                //msg += games[g]["update"] + "\n";
                 games[g]["update"] = "";
             }
         }
         if (msg.length > 0) {
-            msg += "\n" + trackerurl;
+            //msg += "\n" + trackerurl;
             return client.sendNotice(roomId, msg);
         }
 
