@@ -134,10 +134,10 @@ async function run() {
             for (g in games) {
                 msg += game_to_message(games[g]) + "\n";
             }
-            msg += trackerurl;
+            //msg += trackerurl;
             return client.sendNotice(roomId, msg);
         }
-
+ 	/*
         if (event['content']['body'].endsWith(":D")) {
             return client.sendNotice(roomId, "D:");
         } else if (event['content']['body'].endsWith(">:€")) {
@@ -147,6 +147,7 @@ async function run() {
         } else if (event['content']['body'].endsWith("D:")) {
             return client.sendNotice(roomId, ":D");
         }
+        */
     });
 
     AutojoinRoomsMixin.setupOnClient(client);
